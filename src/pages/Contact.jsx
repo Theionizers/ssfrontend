@@ -27,7 +27,7 @@ const Contact = () => {
                     <span className="contact-icon">📞</span>
                     <h3>Call Us</h3>
                     <p>We're available mapping to 10 AM - 9 PM</p>
-                    <a href="tel:+919876543210" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                    <a href="tel:+917897391004" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
                         +91 98765 43210
                     </a>
                 </div>
@@ -37,7 +37,7 @@ const Contact = () => {
                     <h3>WhatsApp Us</h3>
                     <p>For quick queries and orders</p>
                     <a
-                        href="https://wa.me/919876543210"
+                        href="https://wa.me/917897391004"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-whatsapp"

@@ -7,6 +7,8 @@ const Home = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [orderForm, setOrderForm] = useState({ customer_name: '', phone: '', address: '', quantity: 1 });
     const [orderStatus, setOrderStatus] = useState(null);
+    const [waLink, setWaLink] = useState(null);
+    const [orderLoading, setOrderLoading] = useState(false);
     const [gallery, setGallery] = useState([]);
 
     useEffect(() => {
@@ -127,77 +129,103 @@ const Home = () => {
                         {selectedProduct.buy && (
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
+                                setOrderLoading(true);
                                 try {
                                     const res = await api.post('/api/orders/', {
                                         ...orderForm,
                                         product: selectedProduct.id
                                     });
                                     setOrderStatus('success');
-                                    const waLink = res.data?.whatsapp_url || `https://wa.me/919876543210?text=${encodeURIComponent(`Hello, I just placed an order for ${selectedProduct.name} (qty ${orderForm.quantity}). My name: ${orderForm.customer_name}, phone: ${orderForm.phone}, address: ${orderForm.address}`)}`;
-                                    window.open(waLink, '_blank');
-                                    setTimeout(() => {
-                                        setSelectedProduct(null);
-                                        setOrderStatus(null);
-                                        setOrderForm({ customer_name: '', phone: '', address: '', quantity: 1 });
-                                    }, 3000);
+                                    const link = res.data?.whatsapp_url || `https://wa.me/917897391004?text=${encodeURIComponent(`Hello, I just placed an order for ${selectedProduct.name} (qty ${orderForm.quantity}). My name: ${orderForm.customer_name}, phone: ${orderForm.phone}, address: ${orderForm.address}`)}`;
+                                    setWaLink(link);
                                 } catch (err) {
                                     setOrderStatus('error');
+                                } finally {
+                                    setOrderLoading(false);
                                 }
                             }}>
-                                {orderStatus === 'success' && <div className="success-msg">Order placed! Check WhatsApp.</div>}
+                                {orderStatus === 'success' && (
+                                    <div>
+                                        <div className="success-msg">✓ Order placed successfully!</div>
+                                        {orderLoading ? (
+                                            <div className="spinner" style={{ marginTop: '1rem' }}></div>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary"
+                                                style={{ width: '100%', marginTop: '1rem' }}
+                                                onClick={() => {
+                                                    window.open(waLink, '_blank');
+                                                    setTimeout(() => {
+                                                        setSelectedProduct(null);
+                                                        setOrderStatus(null);
+                                                        setWaLink(null);
+                                                        setOrderForm({ customer_name: '', phone: '', address: '', quantity: 1 });
+                                                    }, 1000);
+                                                }}
+                                            >
+                                                📱 Confirm on WhatsApp
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                                 {orderStatus === 'error' && <div className="error-msg">Order failed.</div>}
 
-                                <div className="form-group">
-                                    <label>Your Name</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        required
-                                        value={orderForm.customer_name}
-                                        onChange={e => setOrderForm({ ...orderForm, customer_name: e.target.value })}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Phone</label>
-                                    <input
-                                        type="tel"
-                                        className="form-control"
-                                        required
-                                        value={orderForm.phone}
-                                        onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Address</label>
-                                    <textarea
-                                        className="form-control"
-                                        rows="2"
-                                        required
-                                        value={orderForm.address}
-                                        onChange={e => setOrderForm({ ...orderForm, address: e.target.value })}
-                                    ></textarea>
-                                </div>
-                                <div className="form-group">
-                                    <label>Quantity</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        className="form-control"
-                                        required
-                                        value={orderForm.quantity}
-                                        onChange={e => setOrderForm({ ...orderForm, quantity: e.target.value })}
-                                    />
-                                </div>
-                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                    <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Submit</button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={() => setSelectedProduct(null)}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
+                                {!orderStatus && (
+                                    <>
+                                        <div className="form-group">
+                                            <label>Your Name</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                required
+                                                value={orderForm.customer_name}
+                                                onChange={e => setOrderForm({ ...orderForm, customer_name: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Phone</label>
+                                            <input
+                                                type="tel"
+                                                className="form-control"
+                                                required
+                                                value={orderForm.phone}
+                                                onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Address</label>
+                                            <textarea
+                                                className="form-control"
+                                                rows="2"
+                                                required
+                                                value={orderForm.address}
+                                                onChange={e => setOrderForm({ ...orderForm, address: e.target.value })}
+                                            ></textarea>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Quantity</label>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                className="form-control"
+                                                required
+                                                value={orderForm.quantity}
+                                                onChange={e => setOrderForm({ ...orderForm, quantity: e.target.value })}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                            <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Submit</button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary"
+                                                onClick={() => setSelectedProduct(null)}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </form>
                         )}
 

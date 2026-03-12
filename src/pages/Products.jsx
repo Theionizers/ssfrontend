@@ -17,6 +17,8 @@ const Products = () => {
         quantity: 1
     });
     const [orderStatus, setOrderStatus] = useState(null);
+    const [waLink, setWaLink] = useState(null);
+    const [orderLoading, setOrderLoading] = useState(false);
 
     useEffect(() => {
         api.get('/api/products/')
@@ -42,6 +44,7 @@ const Products = () => {
 
     const handleOrderSubmit = async (e) => {
         e.preventDefault();
+        setOrderLoading(true);
         try {
             const res = await api.post('/api/orders/', {
                 ...orderForm,
@@ -49,25 +52,21 @@ const Products = () => {
             });
             setOrderStatus('success');
 
-            // open whatsapp confirmation link in new window
-            let waLink = null;
+            // store whatsapp link in state instead of opening it
+            let link = null;
             if (res.data && res.data.whatsapp_url) {
-                waLink = res.data.whatsapp_url;
+                link = res.data.whatsapp_url;
             } else {
                 const msg = encodeURIComponent(
                     `Hello, I just placed an order for ${selectedProduct.name} (qty ${orderForm.quantity}). My name: ${orderForm.customer_name}, phone: ${orderForm.phone}, address: ${orderForm.address}`
                 );
-                waLink = `https://wa.me/919876543210?text=${msg}`;
+                link = `https://wa.me/917897391004?text=${msg}`;
             }
-            window.open(waLink, '_blank');
-
-            setTimeout(() => {
-                setSelectedProduct(null);
-                setOrderStatus(null);
-                setOrderForm({ customer_name: '', phone: '', address: '', quantity: 1 });
-            }, 3000);
+            setWaLink(link);
         } catch (error) {
             setOrderStatus('error');
+        } finally {
+            setOrderLoading(false);
         }
     };
 
@@ -158,66 +157,100 @@ const Products = () => {
                         ) : (
                             <>
                                 {orderStatus === 'success' && (
-                                    <div className="success-msg">Order placed successfully! We will contact you soon.</div>
+                                    <div>
+                                        <div className="success-msg">✓ Order placed successfully!</div>
+                                        {orderLoading ? (
+                                            <div className="spinner" style={{ marginTop: '1rem' }}></div>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary"
+                                                style={{ width: '100%', marginTop: '1rem' }}
+                                                onClick={() => {
+                                                    window.open(waLink, '_blank');
+                                                    setTimeout(() => {
+                                                        setSelectedProduct(null);
+                                                        setOrderStatus(null);
+                                                        setWaLink(null);
+                                                        setOrderForm({ customer_name: '', phone: '', address: '', quantity: 1 });
+                                                        setShowOrderForm(false);
+                                                    }, 1000);
+                                                }}
+                                            >
+                                                📱 Confirm on WhatsApp
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                                 {orderStatus === 'error' && (
                                     <div className="error-msg">Failed to place order. Please try again.</div>
                                 )}
 
-                                <form onSubmit={handleOrderSubmit}>
-                                    <div className="form-group">
-                                        <label>Your Name</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            required
-                                            value={orderForm.customer_name}
-                                            onChange={e => setOrderForm({ ...orderForm, customer_name: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Phone Number</label>
-                                        <input
-                                            type="tel"
-                                            className="form-control"
-                                            required
-                                            value={orderForm.phone}
-                                            onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Delivery Address</label>
-                                        <textarea
-                                            className="form-control"
-                                            rows="2"
-                                            required
-                                            value={orderForm.address}
-                                            onChange={e => setOrderForm({ ...orderForm, address: e.target.value })}
-                                        ></textarea>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Quantity</label>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            className="form-control"
-                                            required
-                                            value={orderForm.quantity}
-                                            onChange={e => setOrderForm({ ...orderForm, quantity: e.target.value })}
-                                        />
-                                    </div>
+                                {!orderStatus && (
+                                    <>
+                                        <form onSubmit={handleOrderSubmit}>
+                                            <div className="form-group">
+                                                <label>Your Name</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    required
+                                                    disabled={orderLoading}
+                                                    value={orderForm.customer_name}
+                                                    onChange={e => setOrderForm({ ...orderForm, customer_name: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    className="form-control"
+                                                    required
+                                                    disabled={orderLoading}
+                                                    value={orderForm.phone}
+                                                    onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Delivery Address</label>
+                                                <textarea
+                                                    className="form-control"
+                                                    rows="2"
+                                                    required
+                                                    disabled={orderLoading}
+                                                    value={orderForm.address}
+                                                    onChange={e => setOrderForm({ ...orderForm, address: e.target.value })}
+                                                ></textarea>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Quantity</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    className="form-control"
+                                                    required
+                                                    disabled={orderLoading}
+                                                    value={orderForm.quantity}
+                                                    onChange={e => setOrderForm({ ...orderForm, quantity: e.target.value })}
+                                                />
+                                            </div>
 
-                                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                                        <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Submit Order</button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-secondary"
-                                            onClick={() => setSelectedProduct(null)}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
+                                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                                                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={orderLoading}>
+                                                    {orderLoading ? 'Processing...' : 'Submit Order'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-secondary"
+                                                    onClick={() => setSelectedProduct(null)}
+                                                    disabled={orderLoading}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </>
+                                )}
                             </>
                         )}
                     </div>

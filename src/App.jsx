@@ -35,8 +35,8 @@ const PublicLayout = ({ children }) => (
 
         {/* floating contact buttons for mobile */}
         <div className="mobile-contact-buttons">
-            <a href="tel:+919876543210" className="mobile-icon" aria-label="Call us">📞</a>
-            <a href="https://wa.me/919876543210" className="mobile-icon" aria-label="WhatsApp us" target="_blank" rel="noopener noreferrer">💬</a>
+            <a href="tel:+917897391004" className="mobile-icon" aria-label="Call us">📞</a>
+            <a href="https://wa.me/917897391004" className="mobile-icon" aria-label="WhatsApp us" target="_blank" rel="noopener noreferrer">💬</a>
         </div>
     </>
 );
