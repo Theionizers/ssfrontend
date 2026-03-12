@@ -589,6 +589,8 @@ input, textarea {
 .order-modal {
   width: 90%;
   max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .footer-map-link {
@@ -749,23 +751,28 @@ input, textarea {
   margin-bottom: 1.2rem;
 }
 
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
 .form-group label {
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 
 .form-control {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
 }
 
 .form-control:focus {
