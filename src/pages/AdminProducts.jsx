@@ -6,6 +6,8 @@ const AdminProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
     const { token } = useAuth();
     const fileInputRef = useRef(null);
 
@@ -53,6 +55,7 @@ const AdminProducts = () => {
             data.append('image', imageFile);
         }
 
+        setActionLoading(true);
         try {
             await api.post('/api/products/', data, {
                 headers: {
@@ -72,11 +75,14 @@ const AdminProducts = () => {
         } catch (err) {
             alert('Failed to add product');
             console.error(err);
+        } finally {
+            setActionLoading(false);
         }
     };
 
     const deleteProduct = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
+            setDeletingId(id);
             try {
                 await api.delete(`/api/products/${id}/`, {
                     headers: { Authorization: `Token ${token}` }
@@ -84,6 +90,8 @@ const AdminProducts = () => {
                 fetchProducts();
             } catch (err) {
                 alert('Failed to delete');
+            } finally {
+                setDeletingId(null);
             }
         }
     };
@@ -187,8 +195,8 @@ const AdminProducts = () => {
                             </div>
                         </div>
 
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                            Save Product
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={actionLoading}>
+                            {actionLoading ? <><span className="btn-spinner"></span> Saving...</> : 'Save Product'}
                         </button>
                     </form>
                 </div>
@@ -224,9 +232,11 @@ const AdminProducts = () => {
                                 <td>
                                     <button
                                         className="btn btn-danger btn-sm"
+                                        style={{ justifyContent: 'center' }}
                                         onClick={() => deleteProduct(product.id)}
+                                        disabled={deletingId === product.id}
                                     >
-                                        Delete
+                                        {deletingId === product.id ? <><span className="btn-spinner"></span> Deleting...</> : 'Delete'}
                                     </button>
                                 </td>
                             </tr>

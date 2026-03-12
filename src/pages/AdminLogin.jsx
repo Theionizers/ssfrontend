@@ -65,10 +65,10 @@ const AdminLogin = () => {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        style={{ width: '100%', marginTop: '1rem' }}
+                        style={{ width: '100%', marginTop: '1rem', justifyContent: 'center' }}
                         disabled={loading}
                     >
-                        {loading ? 'Logging in...' : 'Secure Login'}
+                        {loading ? <><span className="btn-spinner"></span> Logging in...</> : 'Secure Login'}
                     </button>
                 </form>
             </div>

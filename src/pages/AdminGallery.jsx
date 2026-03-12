@@ -6,6 +6,8 @@ const AdminGallery = () => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
     const { token } = useAuth();
 
     const [caption, setCaption] = useState('');
@@ -41,6 +43,7 @@ const AdminGallery = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
         if (!file) return;
+        setActionLoading(true);
         const data = new FormData();
         data.append('image', file);
         data.append('caption', caption);
@@ -60,11 +63,14 @@ const AdminGallery = () => {
         } catch (err) {
             console.error(err);
             alert('Upload failed');
+        } finally {
+            setActionLoading(false);
         }
     };
 
     const deleteImage = async (id) => {
         if (!window.confirm('Delete this image?')) return;
+        setDeletingId(id);
         try {
             await api.delete(`/api/gallery/${id}/`, {
                 headers: { Authorization: `Token ${token}` }
@@ -73,6 +79,8 @@ const AdminGallery = () => {
         } catch (err) {
             console.error(err);
             alert('Failed to delete');
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -119,8 +127,8 @@ const AdminGallery = () => {
                                 )}
                             </div>
                         </div>
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                            Upload
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={actionLoading}>
+                            {actionLoading ? <><span className="btn-spinner"></span> Uploading...</> : 'Upload'}
                         </button>
                     </form>
                 </div>
@@ -149,8 +157,13 @@ const AdminGallery = () => {
                                 <td>{img.caption || '-'}</td>
                                 <td>{new Date(img.created_at).toLocaleDateString()}</td>
                                 <td>
-                                    <button className="btn btn-danger btn-sm" onClick={() => deleteImage(img.id)}>
-                                        Delete
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        style={{ justifyContent: 'center' }}
+                                        onClick={() => deleteImage(img.id)}
+                                        disabled={deletingId === img.id}
+                                    >
+                                        {deletingId === img.id ? <><span className="btn-spinner"></span> Deleting...</> : 'Delete'}
                                     </button>
                                 </td>
                             </tr>

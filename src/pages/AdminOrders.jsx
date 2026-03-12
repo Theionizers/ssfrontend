@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext';
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [updatingId, setUpdatingId] = useState(null);
     const { token } = useAuth();
 
     const fetchOrders = () => {
@@ -26,6 +27,7 @@ const AdminOrders = () => {
     }, [token]);
 
     const updateStatus = async (id, status) => {
+        setUpdatingId(id);
         try {
             await api.post(`/api/orders/${id}/update_status/`, { status }, {
                 headers: { Authorization: `Token ${token}` }
@@ -33,6 +35,8 @@ const AdminOrders = () => {
             fetchOrders(); // refresh
         } catch (err) {
             alert('Failed to update status');
+        } finally {
+            setUpdatingId(null);
         }
     };
 
@@ -90,18 +94,22 @@ const AdminOrders = () => {
                                 </td>
                                 <td>
                                     {order.status === 'pending' && (
-                                        <div className="action-row">
+                                        <div className="action-row" style={{ display: 'flex', gap: '0.5rem' }}>
                                             <button
                                                 className="btn btn-success btn-sm"
+                                                style={{ justifyContent: 'center', flex: 1 }}
                                                 onClick={() => updateStatus(order.id, 'delivered')}
+                                                disabled={updatingId === order.id}
                                             >
-                                                Deliver
+                                                {updatingId === order.id ? <><span className="btn-spinner"></span> Updating...</> : 'Deliver'}
                                             </button>
                                             <button
                                                 className="btn btn-danger btn-sm"
+                                                style={{ justifyContent: 'center', flex: 1 }}
                                                 onClick={() => updateStatus(order.id, 'cancelled')}
+                                                disabled={updatingId === order.id}
                                             >
-                                                Cancel
+                                                {updatingId === order.id ? <><span className="btn-spinner"></span> Updating...</> : 'Cancel'}
                                             </button>
                                         </div>
                                     )}

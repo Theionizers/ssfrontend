@@ -16,6 +16,7 @@ const Products = () => {
         address: '',
         quantity: 1
     });
+    const [phoneError, setPhoneError] = useState('');
     const [orderStatus, setOrderStatus] = useState(null);
     const [waLink, setWaLink] = useState(null);
     const [orderLoading, setOrderLoading] = useState(false);
@@ -44,6 +45,15 @@ const Products = () => {
 
     const handleOrderSubmit = async (e) => {
         e.preventDefault();
+
+        // validate phone before submitting
+        const phoneMatch = orderForm.phone.match(/^\d{10}$/);
+        if (!phoneMatch) {
+            setPhoneError('Enter a 10-digit phone number');
+            return;
+        }
+        setPhoneError('');
+
         setOrderLoading(true);
         try {
             const res = await api.post('/api/orders/', {
@@ -88,7 +98,7 @@ const Products = () => {
                         onChange={e => setSearchTerm(e.target.value)}
                     />
                 </div>
-                ) : null}
+            ) : null}
             {loading ? null : filtered.length > 0 ? (
                 <div className="products-grid">
                     {filtered.map(product => (
@@ -209,7 +219,15 @@ const Products = () => {
                                                     disabled={orderLoading}
                                                     value={orderForm.phone}
                                                     onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
+                                                    onBlur={() => {
+                                                        if (orderForm.phone && !/^\d{10}$/.test(orderForm.phone)) {
+                                                            setPhoneError('Phone must be 10 digits');
+                                                        } else {
+                                                            setPhoneError('');
+                                                        }
+                                                    }}
                                                 />
+                                                {phoneError && <div className="error-msg" style={{ marginTop: '0.25rem' }}>{phoneError}</div>}
                                             </div>
                                             <div className="form-group">
                                                 <label>Delivery Address</label>
@@ -236,8 +254,8 @@ const Products = () => {
                                             </div>
 
                                             <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                                                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={orderLoading}>
-                                                    {orderLoading ? 'Processing...' : 'Submit Order'}
+                                                <button type="submit" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }} disabled={orderLoading}>
+                                                    {orderLoading ? <><span className="btn-spinner"></span> Processing...</> : 'Submit Order'}
                                                 </button>
                                                 <button
                                                     type="button"

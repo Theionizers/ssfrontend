@@ -28,7 +28,7 @@ const Contact = () => {
                     <h3>Call Us</h3>
                     <p>We're available mapping to 10 AM - 9 PM</p>
                     <a href="tel:+917897391004" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                        +91 98765 43210
+                        +91 78973 91004
                     </a>
                 </div>
 

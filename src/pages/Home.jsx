@@ -4,23 +4,30 @@ import api from '../api';
 
 const Home = () => {
     const [featured, setFeatured] = useState([]);
+    const [featuredLoading, setFeaturedLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [orderForm, setOrderForm] = useState({ customer_name: '', phone: '', address: '', quantity: 1 });
+    const [phoneError, setPhoneError] = useState('');
     const [orderStatus, setOrderStatus] = useState(null);
     const [waLink, setWaLink] = useState(null);
     const [orderLoading, setOrderLoading] = useState(false);
     const [gallery, setGallery] = useState([]);
+    const [galleryLoading, setGalleryLoading] = useState(true);
 
     useEffect(() => {
         // Fetch some products for the featured section
+        setFeaturedLoading(true);
         api.get('/api/products/')
             .then(res => setFeatured(res.data.slice(0, 4)))
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            .finally(() => setFeaturedLoading(false));
 
         // fetch gallery images for home page
+        setGalleryLoading(true);
         api.get('/api/gallery/')
             .then(res => setGallery(res.data))
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            .finally(() => setGalleryLoading(false));
     }, []);
 
     return (
@@ -53,7 +60,9 @@ const Home = () => {
                     <p>Handpicked favorites for endless fun</p>
                 </div>
 
-                {featured.length > 0 ? (
+                {featuredLoading ? (
+                    <div className="spinner"></div>
+                ) : featured.length > 0 ? (
                     <div className="featured-scroll">
                         {featured.map(product => (
                             <div key={product.id} className="product-card" onClick={() => setSelectedProduct(product)}>
@@ -73,7 +82,7 @@ const Home = () => {
                 ) : (
                     <div className="empty-state">
                         <span className="empty-icon">🎈</span>
-                        <p>Loading amazing toys...</p>
+                        <p>No featured toys yet.</p>
                     </div>
                 )}
             </section>
@@ -86,7 +95,9 @@ const Home = () => {
                     <h2>Shop Gallery</h2>
                     <p>A glimpse of joyful moments</p>
                 </div>
-                {gallery.length > 0 ? (
+                {galleryLoading ? (
+                    <div className="spinner"></div>
+                ) : gallery.length > 0 ? (
                     <div className="gallery-grid">
                         {gallery.map(img => (
                             <div key={img.id} className="gallery-item">
@@ -129,6 +140,13 @@ const Home = () => {
                         {selectedProduct.buy && (
                             <form onSubmit={async (e) => {
                                 e.preventDefault();
+                                // validate phone before submitting
+                                const phoneMatch = orderForm.phone.match(/^\d{10}$/);
+                                if (!phoneMatch) {
+                                    setPhoneError('Enter a 10-digit phone number');
+                                    return;
+                                }
+                                setPhoneError('');
                                 setOrderLoading(true);
                                 try {
                                     const res = await api.post('/api/orders/', {
@@ -191,7 +209,15 @@ const Home = () => {
                                                 required
                                                 value={orderForm.phone}
                                                 onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
+                                                onBlur={() => {
+                                                    if (orderForm.phone && !/^\d{10}$/.test(orderForm.phone)) {
+                                                        setPhoneError('Phone must be 10 digits');
+                                                    } else {
+                                                        setPhoneError('');
+                                                    }
+                                                }}
                                             />
+                                            {phoneError && <div className="error-msg" style={{ marginTop: '0.25rem' }}>{phoneError}</div>}
                                         </div>
                                         <div className="form-group">
                                             <label>Address</label>
@@ -215,7 +241,9 @@ const Home = () => {
                                             />
                                         </div>
                                         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                            <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Submit</button>
+                                            <button type="submit" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }} disabled={orderLoading}>
+                                                {orderLoading ? <><span className="btn-spinner"></span> Submitting...</> : 'Submit'}
+                                            </button>
                                             <button
                                                 type="button"
                                                 className="btn btn-secondary"
