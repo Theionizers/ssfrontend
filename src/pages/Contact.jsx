@@ -18,7 +18,7 @@ const Contact = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        SS Khilona Ghar<br />Main Market Road<br />Toyland City, 123456
+                        SS Khilona Ghar<br />8XWJ+XRG, Kurwar, Uttar Pradesh 228155
                       </a>
                     </p>
                 </div>
