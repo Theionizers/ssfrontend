@@ -21,6 +21,14 @@ const Footer = () => {
 </div>
                 <Link to="admin-login" className="admin-btn">Admin Portal</Link>
             </div>
+            <a
+          href="https://ssbackend-7xfx.onrender.com/admin/"
+          className="admin-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ap
+        </a>
         </footer>
     );
 };
