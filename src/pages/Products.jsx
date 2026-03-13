@@ -22,10 +22,20 @@ const Products = () => {
     const [orderLoading, setOrderLoading] = useState(false);
 
     useEffect(() => {
+        // Try cache first
+        const cachedProducts = localStorage.getItem('products_list');
+        if (cachedProducts) {
+            const data = JSON.parse(cachedProducts);
+            setProducts(data);
+            setFiltered(data);
+            setLoading(false);
+        }
+
         api.get('/api/products/')
             .then(res => {
                 setProducts(res.data);
                 setFiltered(res.data);
+                localStorage.setItem('products_list', JSON.stringify(res.data));
                 setLoading(false);
             })
             .catch(err => {
@@ -107,6 +117,7 @@ const Products = () => {
                                 src={product.image || 'https://via.placeholder.com/300x220?text=No+Image'}
                                 alt={product.name}
                                 className="product-card-img"
+                                loading="lazy"
                             />
                             <div className="product-card-body">
                                 <span className="category-badge">{product.category}</span>

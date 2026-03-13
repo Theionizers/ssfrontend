@@ -15,17 +15,35 @@ const Home = () => {
     const [galleryLoading, setGalleryLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch some products for the featured section
-        setFeaturedLoading(true);
+        // Try to load from cache first
+        const cachedFeatured = localStorage.getItem('featured_products');
+        const cachedGallery = localStorage.getItem('gallery');
+
+        if (cachedFeatured) {
+            setFeatured(JSON.parse(cachedFeatured));
+            setFeaturedLoading(false);
+        }
+        if (cachedGallery) {
+            setGallery(JSON.parse(cachedGallery));
+            setGalleryLoading(false);
+        }
+
+        // Fetch fresh products for the featured section
         api.get('/api/products/')
-            .then(res => setFeatured(res.data.slice(0, 4)))
+            .then(res => {
+                const data = res.data.slice(0, 4);
+                setFeatured(data);
+                localStorage.setItem('featured_products', JSON.stringify(data));
+            })
             .catch(err => console.error(err))
             .finally(() => setFeaturedLoading(false));
 
         // fetch gallery images for home page
-        setGalleryLoading(true);
         api.get('/api/gallery/')
-            .then(res => setGallery(res.data))
+            .then(res => {
+                setGallery(res.data);
+                localStorage.setItem('gallery', JSON.stringify(res.data));
+            })
             .catch(err => console.error(err))
             .finally(() => setGalleryLoading(false));
     }, []);
@@ -70,6 +88,7 @@ const Home = () => {
                                     src={product.image || 'https://via.placeholder.com/300x220?text=No+Image'}
                                     alt={product.name}
                                     className="product-card-img"
+                                    loading="lazy"
                                 />
                                 <div className="product-card-body">
                                     <span className="category-badge">{product.category}</span>
@@ -87,9 +106,12 @@ const Home = () => {
                 )}
             </section>
 
-            {/* Gallery preview on home */}
+            {/* View All Products Link */}
+            <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                <Link to="/products" className="btn btn-secondary">View All Products</Link>
+            </div>
 
-            {/* adjust price and card width nowhere else */}
+            {/* Gallery preview on home */}
             <section className="section gallery-section">
                 <div className="section-header">
                     <h2>Shop Gallery</h2>
@@ -100,8 +122,8 @@ const Home = () => {
                 ) : gallery.length > 0 ? (
                     <div className="gallery-grid">
                         {gallery.map(img => (
-                            <div key={img.id} className="gallery-item">
-                                <img src={img.image} alt={img.caption} />
+                             <div key={img.id} className="gallery-item">
+                                <img src={img.image} alt={img.caption} loading="lazy" />
                                 <div className="gallery-overlay">
                                     {img.caption || 'SS Khilona Ghar Moment'}
                                 </div>

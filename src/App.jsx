@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 
@@ -6,18 +6,18 @@ import { AuthProvider, useAuth } from './AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
-// Pages
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Contact from './pages/Contact';
+// Pages - Lazy Loaded
+const Home = lazy(() => import('./pages/Home'));
+const Products = lazy(() => import('./pages/Products'));
+const Contact = lazy(() => import('./pages/Contact'));
 
-// Admin Pages
-import AdminLogin from './pages/AdminLogin';
-import AdminPanel from './pages/AdminPanel';
-import AdminOrders from './pages/AdminOrders';
-import AdminProducts from './pages/AdminProducts';
-import AdminGallery from './pages/AdminGallery';
-import AdminDashboard from './pages/AdminDashboard';
+// Admin Pages - Lazy Loaded
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const AdminOrders = lazy(() => import('./pages/AdminOrders'));
+const AdminProducts = lazy(() => import('./pages/AdminProducts'));
+const AdminGallery = lazy(() => import('./pages/AdminGallery'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -45,27 +45,29 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-                    <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
-                    {/* gallery page removed; images shown on home */}
-                    <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
+                <Suspense fallback={<div className="loading-screen"><div className="spinner"></div></div>}>
+                    <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+                        <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
+                        {/* gallery page removed; images shown on home */}
+                        <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
 
-                    {/* Admin Login (No Navbar/Footer) */}
-                    <Route path="/admin-login" element={<AdminLogin />} />
+                        {/* Admin Login (No Navbar/Footer) */}
+                        <Route path="/admin-login" element={<AdminLogin />} />
 
-                    {/* Protected Admin Routes */}
-                    <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>}>
-                        <Route index element={<AdminDashboard />} />
-                        <Route path="orders" element={<AdminOrders />} />
-                        <Route path="products" element={<AdminProducts />} />
-                        <Route path="gallery" element={<AdminGallery />} />
-                    </Route>
+                        {/* Protected Admin Routes */}
+                        <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>}>
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="orders" element={<AdminOrders />} />
+                            <Route path="products" element={<AdminProducts />} />
+                            <Route path="gallery" element={<AdminGallery />} />
+                        </Route>
 
-                    {/* Fallback */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                        {/* Fallback */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </Suspense>
             </Router>
         </AuthProvider>
     );

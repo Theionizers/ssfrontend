@@ -36,7 +36,7 @@ const Gallery = () => {
                 <div className="gallery-grid">
                     {images.map(item => (
                         <div key={item.id} className="gallery-item">
-                            <img src={item.image} alt={item.caption} />
+                            <img src={item.image} alt={item.caption} loading="lazy" />
                             <div className="gallery-overlay">
                                 {item.caption || 'SS Khilona Ghar Moments'}
                             </div>
