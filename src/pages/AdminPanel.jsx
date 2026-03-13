@@ -23,7 +23,13 @@ const AdminPanel = () => {
                 </div>
                 <NavLink to="/admin" end>📊 Dashboard</NavLink>
                 <NavLink to="/admin/orders">📦 Orders</NavLink>
-                
+                <a
+  href="https://ssbackend-7xfx.onrender.com/admin/shop/product/add/"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  ➕ Add Product
+</a>
                 <NavLink to="/admin/gallery">📷 Gallery</NavLink>
 
                 <button onClick={handleLogout} className="logout-btn">
