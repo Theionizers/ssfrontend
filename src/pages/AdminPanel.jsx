@@ -23,7 +23,7 @@ const AdminPanel = () => {
                 </div>
                 <NavLink to="/admin" end>📊 Dashboard</NavLink>
                 <NavLink to="/admin/orders">📦 Orders</NavLink>
-                <NavLink to="/admin/products">🧸 Products</NavLink>
+                
                 <NavLink to="/admin/gallery">📷 Gallery</NavLink>
 
                 <button onClick={handleLogout} className="logout-btn">
