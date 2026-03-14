@@ -1,6 +1,7 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
+import api from './api';
 
 // Components
 import Navbar from './components/Navbar';
@@ -42,11 +43,61 @@ const PublicLayout = ({ children }) => (
             <a href="https://wa.me/917897391004" className="mobile-icon" aria-label="WhatsApp us" target="_blank" rel="noopener noreferrer">💬</a>
         </div>
         
+        <button 
+            className="mobile-icon" 
+            style={{ 
+                position: 'fixed', 
+                bottom: '100px', 
+                right: '25px', 
+                background: 'var(--primary)', 
+                color: 'white', 
+                border: 'none', 
+                width: '50px', 
+                height: '50px', 
+                borderRadius: '50%', 
+                fontSize: '1.5rem', 
+                boxShadow: '0 4px 15px rgba(255,107,53,0.3)',
+                zIndex: 1000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+            }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+            ↑
+        </button>
+
         <TimeoutCallButton />
     </>
 );
 
 function App() {
+    const [isBackendReady, setIsBackendReady] = useState(false);
+
+    useEffect(() => {
+        // Ping the backend to wake it up (Render cold start)
+        const wakeBackend = async () => {
+            try {
+                // Try to load products as the "health check"
+                await api.get('/api/products/');
+                setIsBackendReady(true);
+            } catch (error) {
+                console.error("Backend wake-up ping failed:", error);
+                // Even if it fails, we should probably let the app load after a timeout
+                // but for now, we wait for a response.
+                // If it's a 4xx/5xx, it still means the backend is "up" enough to respond.
+                setIsBackendReady(true);
+            }
+        };
+
+        wakeBackend();
+    }, []);
+
+    if (!isBackendReady) {
+        return <LoadingScreen fullScreen />;
+    }
+
     return (
         <AuthProvider>
             <Router>
