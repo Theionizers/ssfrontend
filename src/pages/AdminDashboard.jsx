@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useAuth } from '../AuthContext';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AdminDashboard = () => {
-    const [counts, setCounts] = useState({ orders: 0, pending: 0, products: 0, gallery: 0 });
+    const [counts, setCounts] = useState(null);
     const { token } = useAuth();
 
     const fetchCounts = async () => {
@@ -29,6 +30,8 @@ const AdminDashboard = () => {
         fetchCounts();
     }, [token]);
 
+    if (!counts) return <div className="spinner"><LoadingScreen /></div>;
+
     return (
         <div>
             <div className="admin-header">
@@ -46,11 +49,17 @@ const AdminDashboard = () => {
                     <div className="stat-value">{counts.pending}</div>
                     <div className="stat-label">Pending</div>
                 </div>
-                <div className="glass-card stat-card">
+                <a 
+                    href="https://ssbackend-7xfx.onrender.com/admin/shop/product/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="glass-card stat-card"
+                    style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                >
                     <div className="stat-icon">🧸</div>
                     <div className="stat-value">{counts.products}</div>
-                    <div className="stat-label">Products</div>
-                </div>
+                    <div className="stat-label">Products (Manage)</div>
+                </a>
                 <div className="glass-card stat-card">
                     <div className="stat-icon">📷</div>
                     <div className="stat-value">{counts.gallery}</div>

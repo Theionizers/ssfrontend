@@ -21,16 +21,25 @@ const AdminPanel = () => {
                 <div style={{ padding: '0 1rem 1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                     Welcome, <strong>{username}</strong>
                 </div>
+                <NavLink to="/" className="home-link-sidebar">🏠 Go to Home</NavLink>
                 <NavLink to="/admin" end>📊 Dashboard</NavLink>
                 <NavLink to="/admin/orders">📦 Orders</NavLink>
                 <a
-  href="https://ssbackend-7xfx.onrender.com/admin/shop/product/add/"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  ➕ Add Product
-</a>
-                <NavLink to="/admin/gallery">📷 Gallery</NavLink>
+                  href="https://ssbackend-7xfx.onrender.com/admin/shop/product/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="django-admin-btn"
+                >
+                  🧸 Products (Main Admin)
+                </a>
+                <a
+                  href="https://ssbackend-7xfx.onrender.com/admin/shop/galleryimage/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="django-admin-btn"
+                >
+                  📷 Gallery (Main Admin)
+                </a>
 
                 <button onClick={handleLogout} className="logout-btn">
                     <span>🚪</span> Logout
@@ -51,10 +60,27 @@ const AdminPanel = () => {
                     >
                         ☰
                     </button>
+                    <NavLink to="/" className="home-link-mobile">🏠 Home</NavLink>
                     <NavLink to="/admin" end onClick={closeSidebar}>Dashboard</NavLink>
                     <NavLink to="/admin/orders" onClick={closeSidebar}>Orders</NavLink>
-                    <NavLink to="/admin/products" onClick={closeSidebar}>Products</NavLink>
-                    <NavLink to="/admin/gallery" onClick={closeSidebar}>Gallery</NavLink>
+                    <a 
+                      href="https://ssbackend-7xfx.onrender.com/admin/shop/product/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="nav-link"
+                      onClick={closeSidebar}
+                    >
+                      Products
+                    </a>
+                    <a 
+                      href="https://ssbackend-7xfx.onrender.com/admin/shop/galleryimage/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="nav-link"
+                      onClick={closeSidebar}
+                    >
+                      Gallery
+                    </a>
                     <button onClick={handleLogout} className="btn btn-danger btn-sm" style={{ padding: '0.4rem 0.8rem' }}>Logout</button>
                 </div>
 

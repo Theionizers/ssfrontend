@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useAuth } from '../AuthContext';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -40,7 +41,59 @@ const AdminOrders = () => {
         }
     };
 
-    if (loading) return <div className="spinner"></div>;
+    const renderAddress = (address) => {
+        if (!address) return null;
+        // Split by the emoji-separator we use in the frontend
+        const parts = address.split('\n📍 Location: ');
+        if (parts.length > 1) {
+            const addr = parts[0];
+            const loc = parts[1];
+            return (
+                <>
+                    <div>{addr}</div>
+                    {loc && (
+                        <div style={{ marginTop: '6px' }}>
+                            {loc.startsWith('http') ? (
+                                <a 
+                                    href={loc} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="btn btn-secondary" 
+                                    style={{ 
+                                        fontSize: '0.65rem', 
+                                        padding: '0.2rem 0.5rem', 
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        gap: '4px',
+                                        background: 'rgba(255,107,53,0.1)',
+                                        color: 'var(--primary)',
+                                        border: '1px solid var(--primary)'
+                                    }}
+                                >
+                                    📍 View Map
+                                </a>
+                            ) : (
+                                <div style={{ 
+                                    fontSize: '0.7rem', 
+                                    padding: '0.2rem 0.5rem', 
+                                    background: 'rgba(255,107,53,0.05)', 
+                                    borderRadius: '4px', 
+                                    color: 'var(--primary)',
+                                    display: 'inline-block',
+                                    border: '1px dashed var(--primary)'
+                                }}>
+                                    Landmark: {loc}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </>
+            );
+        }
+        return address;
+    };
+
+    if (loading) return <div className="spinner"><LoadingScreen /></div>;
 
     return (
         <div>
@@ -81,7 +134,9 @@ const AdminOrders = () => {
                                 <td>#{order.id}</td>
                                 <td>
                                     <strong>{order.customer_name}</strong>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.address}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                        {renderAddress(order.address)}
+                                    </div>
                                 </td>
                                 <td>{order.phone}</td>
                                 <td>{order.product_name}</td>

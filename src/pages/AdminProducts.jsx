@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api';
 import { useAuth } from '../AuthContext';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
@@ -96,18 +97,21 @@ const AdminProducts = () => {
         }
     };
 
-    if (loading) return <div className="spinner"></div>;
+    if (loading) return <div className="spinner"><LoadingScreen /></div>;
 
     return (
         <div>
             <div className="admin-header">
                 <h1>Products Management</h1>
-                <button
+                <a
+                    href="https://ssbackend-7xfx.onrender.com/admin/shop/product/add/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn btn-primary"
-                    onClick={() => setShowForm(!showForm)}
+                    style={{ textDecoration: 'none' }}
                 >
-                    {showForm ? 'Cancel' : '+ Add New Product'}
-                </button>
+                    + Add New Product (Django Admin)
+                </a>
             </div>
 
             {showForm && (

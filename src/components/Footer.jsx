@@ -24,15 +24,6 @@ const Footer = () => {
           Admin Login
         </Link>
 
-        {/* Django Admin Panel */}
-        <a
-          href="https://ssbackend-7xfx.onrender.com/admin/"
-          className="admin-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          add products
-        </a>
 
       </div>
     </footer>

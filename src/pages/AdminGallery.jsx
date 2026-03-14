@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api';
 import { useAuth } from '../AuthContext';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AdminGallery = () => {
     const [images, setImages] = useState([]);
@@ -84,7 +85,7 @@ const AdminGallery = () => {
         }
     };
 
-    if (loading) return <div className="spinner"></div>;
+    if (loading) return <div className="spinner"><LoadingScreen /></div>;
 
     return (
         <div>

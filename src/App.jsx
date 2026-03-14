@@ -1,10 +1,12 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 
 // Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import TimeoutCallButton from './components/TimeoutCallButton';
+import LoadingScreen from './components/LoadingScreen';
 
 // Pages - Lazy Loaded
 const Home = lazy(() => import('./pages/Home'));
@@ -35,9 +37,12 @@ const PublicLayout = ({ children }) => (
 
         {/* floating contact buttons for mobile */}
         <div className="mobile-contact-buttons">
+            <Link to="/" className="home-icon" aria-label="Go to Home">🏠</Link>
             <a href="tel:+917897391004" className="mobile-icon" aria-label="Call us">📞</a>
             <a href="https://wa.me/917897391004" className="mobile-icon" aria-label="WhatsApp us" target="_blank" rel="noopener noreferrer">💬</a>
         </div>
+        
+        <TimeoutCallButton />
     </>
 );
 
@@ -45,7 +50,7 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <Suspense fallback={<div className="loading-screen"><div className="spinner"></div></div>}>
+                <Suspense fallback={<LoadingScreen fullScreen />}>
                     <Routes>
                         {/* Public Routes */}
                         <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
